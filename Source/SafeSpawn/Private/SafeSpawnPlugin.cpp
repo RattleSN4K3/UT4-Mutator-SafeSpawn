@@ -1,4 +1,4 @@
-//#include "SafeSpawnMutator.h"
+#include "SafeSpawnMutator.h"
 
 #include "Core.h"
 #include "Engine.h"
