@@ -1,14 +1,10 @@
 #pragma once
 
-#include "Core.h"
-#include "Engine.h"
-//#include "UnrealTournament.h"
-//#include "UTTimedPowerup.h"
-
+#include "UTInventory.h"
 #include "SafeSpawnInventory.generated.h"
 
 UCLASS()
-class ASafeSpawnInventory : public AInfo
+class ASafeSpawnInventory : public AUTInventory // TODO: implement AUTTimedPowerup once engine exports it properly
 {
 	GENERATED_UCLASS_BODY()
 
