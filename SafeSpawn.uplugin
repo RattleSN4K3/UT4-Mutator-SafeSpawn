@@ -1,0 +1,23 @@
+{
+	"FileVersion" : 3,
+	
+	"FriendlyName" : "Safe Spawn Mutator",
+	"Version" : 1,
+	"VersionName" : "1.0",
+	"CreatedBy" : "RattleSN4K3",
+	"CreatedByURL" : "",
+	"EngineVersion" : "",
+	"Description" : "A ghost protection spawn system",
+	"Category" : "UnrealTournament.Mutator",
+	"EnabledByDefault" : false,
+	
+	"Modules" :
+	[
+		{
+			"Name" : "SafeSpawn",
+			"Type" : "Runtime",
+			"WhitelistPlatforms" : [ "Win32", "Win64", "Linux" ]
+		}
+	]
+}
+
