@@ -47,3 +47,19 @@ void ASafeSpawnRepInfo::OnRep_PawnCounter()
 {
 
 }
+
+//**********************************************************************************
+// Public functions
+//**********************************************************************************
+
+/** CALLED SERVERSIDED ONLY */
+void ASafeSpawnRepInfo::NotifyRespawned(AUTCharacter* Other)
+{
+
+}
+
+/** CALLED SERVERSIDED ONLY */
+void ASafeSpawnRepInfo::NotifyActive()
+{
+
+}

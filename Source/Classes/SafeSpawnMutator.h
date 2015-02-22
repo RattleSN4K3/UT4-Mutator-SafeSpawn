@@ -10,6 +10,7 @@
 
 #include "SafeSpawnRepInfo.h"
 #include "SafeSpawnLink.h"
+#include "SafeSpawnInventory.h"
 
 #include "SafeSpawnMutator.generated.h"
 
@@ -29,23 +30,41 @@ class ASafeSpawnMutator : public AUTMutator
 	UPROPERTY(BlueprintReadWrite, Config)
 	float InitialFireDelay;
 
+	//'''''''''''''''''''''''''
+	// Workflow variables
+	//'''''''''''''''''''''''''
+
+	UPROPERTY()
+	USoundBase* InventoryWarningSound;
+	UPROPERTY()
+	USoundBase* InventoryTimeoutSound;
+
+	UPROPERTY()
+	USoundBase* RestoreSpawnSound;
+	UPROPERTY()
+	TSubclassOf<class AUTReplicatedEmitter> RestoreTeleportEffect;
 
 	//'''''''''''''''''''''''''
-	// Variables
+	// Classes
 	//'''''''''''''''''''''''''
 
 	UPROPERTY(BlueprintReadWrite)
-	TSubclassOf<AUTInventory> DamageHelperClass;
+	TSubclassOf<ASafeSpawnInventory> DamageHelperClass;
 
 	//'''''''''''''''''''''''''
 	// Inherited funtions
 	//'''''''''''''''''''''''''
+
+	virtual void BeginPlay() override;
 
 	void PostPlayerInit_Implementation(AController* C) override;
 	void NotifyLogout_Implementation(AController* C) override;
 
 	void ModifyPlayer_Implementation(APawn* Other) override;
 	bool CheckRelevance_Implementation(AActor* Other) override;
+
+	// TODO: Add Vehicle support
+	//bool DriverEnteredVehicle_Implementation(AVehicle* V, APawn* P) override;
 
 
 	//'''''''''''''''''''''''''
@@ -61,7 +80,7 @@ class ASafeSpawnMutator : public AUTMutator
 	//'''''''''''''''''''''''''
 
 	void OnUnProtectFire(APlayerController* PC, ASafeSpawnRepInfo* ClientRI);
-	void OnUnProtectPickup(AUTCharacter* P);
+	void OnUnProtectPickup(ACharacter* P);
 
 
 	//'''''''''''''''''''''''''
@@ -105,7 +124,7 @@ class ASafeSpawnMutator : public AUTMutator
 		if (P == NULL)
 			return false;
 
-		//@TODO: Add Vehicle support
+		// TODO: Add Vehicle support
 		//PC = Cast<AUTPlayerController>(P->Controller);
 		//if (PC == NULL && P->DrivenVehicle != NULL)
 		//{
@@ -121,7 +140,7 @@ class ASafeSpawnMutator : public AUTMutator
 			return NULL;
 
 		AController* C = P->Controller;
-		//@TODO: Add Vehicle support
+		// TODO: Add Vehicle support
 		//if (C == NULL && P->DrivenVehicle != NULL)
 		//{
 		//	C = P->DrivenVehicle->Controller;

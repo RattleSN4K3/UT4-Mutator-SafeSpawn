@@ -5,11 +5,9 @@
 #include "UTCharacter.h"
 //#include "UTPlayerController.h"
 
-#include "SafeSpawnRepInfo.generated.h"
+#include "SafeSpawn.h"
 
-//class ASafeSpawnRepInfo;
-//DECLARE_DELEGATE_TwoParams(FUnProtectFireDelegate, class APlayerController*, class ASafeSpawnRepInfo*);
-DECLARE_DELEGATE(FUnProtectFireDelegate);
+#include "SafeSpawnRepInfo.generated.h"
 
 UCLASS(Blueprintable)
 class ASafeSpawnRepInfo : public AInfo
@@ -55,4 +53,17 @@ protected:
 
 	UPROPERTY(Replicated)
 	float InitialFireDelay;
+
+	//'''''''''''''''''''''''''
+	// Public functions
+	//'''''''''''''''''''''''''
+
+public:
+
+	/** CALLED SERVERSIDED ONLY */
+	void NotifyRespawned(AUTCharacter* Other);
+
+	/** CALLED SERVERSIDED ONLY */
+	void NotifyActive();
+
 };

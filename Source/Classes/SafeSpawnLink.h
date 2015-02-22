@@ -32,4 +32,16 @@ protected:
 
 	UPROPERTY(Replicated)
 	float ReplicatedOriginals;
+
+	//'''''''''''''''''''''''''
+	// Public functions
+	//'''''''''''''''''''''''''
+
+public:
+
+	/** ONLY CALLED SERVERSIDED */
+	void NotfiyNewPawn(AUTCharacter* Other);
+
+	/** ONLY CALLED SERVERSIDED */
+	void NotfiyRemove();
 };

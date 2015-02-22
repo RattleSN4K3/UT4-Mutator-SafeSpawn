@@ -18,6 +18,10 @@ ASafeSpawnLink::ASafeSpawnLink(const FObjectInitializer& ObjectInitializer)
 	NetUpdateFrequency = 10;
 }
 
+//**********************************************************************************
+// Replication
+//**********************************************************************************
+
 void ASafeSpawnLink::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -27,6 +31,22 @@ void ASafeSpawnLink::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & Ou
 }
 
 void ASafeSpawnLink::OnRep_PawnOwner()
+{
+
+}
+
+//**********************************************************************************
+// Public functions
+//**********************************************************************************
+
+/** ONLY CALLED SERVERSIDED */
+void ASafeSpawnLink::NotfiyNewPawn(AUTCharacter* Other)
+{
+
+}
+
+/** ONLY CALLED SERVERSIDED */
+void ASafeSpawnLink::NotfiyRemove()
 {
 
 }
