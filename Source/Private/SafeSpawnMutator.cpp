@@ -1,8 +1,5 @@
+#include "SafeSpawn.h"
 #include "SafeSpawnMutator.h"
-//#include "UnrealTournament.h"
-
-#include "SafeSpawnRepInfo.h"
-#include "SafeSpawnInventory.h"
 
 ASafeSpawnMutator::ASafeSpawnMutator(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

@@ -1,5 +1,4 @@
-#include "SafeSpawnMutator.h"
-
+#include "SafeSpawn.h"
 #include "SafeSpawnInteraction.h"
 
 USafeSpawnInteraction::USafeSpawnInteraction(const FObjectInitializer& ObjectInitializer)
