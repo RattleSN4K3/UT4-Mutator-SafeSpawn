@@ -1,47 +1,76 @@
 #include "SafeSpawn.h"
 
-USafeSpawn::USafeSpawn(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
-{
-}
-
 //**********************************************************************************
 // Private static functions
 //**********************************************************************************
 
-static UMaterialInterface GetGhostMaterial()
+UMaterialInterface* USafeSpawn::GetGhostMaterial()
 {
-
+	return NULL;
 }
 
-static USoundBase GetGhostAmbientSound()
+USoundBase* USafeSpawn::GetGhostAmbientSound()
 {
-
+	return NULL;
 }
 
 //**********************************************************************************
 // Static functions
 //**********************************************************************************
 
-//static void SetPPEffectsFor(APlayerController PC, bool bAdd, uint8& bOriginalOverridePostProcessSettings, PostProcessSettings& OriginalPostProcessSettingsOverride, uint8& PP_Scene_Changed);
+void USafeSpawn::SetPPEffectsFor(APlayerController* PC, bool bAdd, bool& bOriginalOverridePostProcessSettings, FPostProcessSettings& OriginalPostProcessSettingsOverride, bool& PP_Scene_Changed)
+{
 
-//static void SetGhostFor(AUTCharacter* P, bool bTurnOn)
-//{
-//	FGhostCollisionInfo bOriginals;
-//	USafeSpawn::SetGhostFor(P, bTurnOn, bOriginals, false);
-////}
-//static void SetGhostFor(AUTCharacter* P, bool bTurnOn, FGhostCollisionInfo& bOriginals, bool bUseDefault) {}
-//static void SetGhostEffectFor(AUTCharacter* P, bool bTurnOn) {}
-//static void SetSkinEx(AUTCharacter* P, UMaterialInterface NewMaterial) {}
-//static void SetGhostSoundFor(AUTCharacter* P, bool bTurnOn) {}
-//static void SetCrosshairFor(bool bRemoveCross, TArray<FCrosshairRestoreInfo>& CrosshairRestore) {}
-//
-////static void SetThirdPersonFor(APlayerController* UTPC, bool bEnable)
-////{
-////	uint8 bOriginalBehindView;
-////	USafeSpawn::SetThirdPersonFor(UTPC, bEnable, bOriginalBehindView);
-////}
-//static void SetThirdPersonFor(APlayerController* UTPC, bool bEnable, uint8& bOriginalBehindView) {}
-//
-//static void CheckSpawnKill(AUTCharacter* Other) {}
-//static void PlayFireBlockedWarningFor(APlayerController* PlayerOwner) {}
+}
+
+void USafeSpawn::SetGhostFor(AUTCharacter* P, bool bTurnOn, const FGhostCollisionInfo& bOriginals /*= FGhostCollisionInfo()*/, bool bUseDefault/* = false*/)
+{
+
+}
+
+void USafeSpawn::SetGhostEffectFor(AUTCharacter* P, bool bTurnOn)
+{
+
+}
+
+void USafeSpawn::SetSkinEx(AUTCharacter* P, UMaterialInterface* NewMaterial)
+{
+
+}
+
+void USafeSpawn::SetGhostSoundFor(AUTCharacter* P, bool bTurnOn)
+{
+
+}
+
+void USafeSpawn::SetCrosshairFor(bool bRemoveCross, TArray<FCrosshairRestoreInfo>& CrosshairRestore)
+{
+
+}
+
+void USafeSpawn::SetThirdPersonFor(APlayerController* UTPC, bool bEnable, /*const*/ bool& bOriginalBehindView /*= false*/)
+{
+
+}
+
+void USafeSpawn::CheckSpawnKill(AUTCharacter* Other)
+{
+
+}
+
+void USafeSpawn::PlayFireBlockedWarningFor(APlayerController* PlayerOwner)
+{
+	
+}
+
+bool USafeSpawn::ShouldIgnoreInputForNow(float StoredTime, float CurrentTime)
+{
+	//if (GetDefault()->IgnoreInputThreshold < 0)
+	//{
+	//	return true;
+	//}
+
+	//return (StoredTime + GetDefault()->IgnoreInputThreshold > CurrentTime);
+
+	return true;
+}

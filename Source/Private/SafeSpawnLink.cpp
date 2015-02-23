@@ -82,7 +82,7 @@ void ASafeSpawnLink::SetGhost(bool bTurnOn)
 	if (bTurnOn)
 	{
 		FGhostCollisionInfo bOriginals = FGhostCollisionInfo();
-		//USafeSpawn::SetGhostFor(LastPawn, true, bOriginals);
+		USafeSpawn::SetGhostFor(LastPawn, true, bOriginals, false);
 
 		if (Role == ROLE_Authority)
 		{
@@ -92,11 +92,11 @@ void ASafeSpawnLink::SetGhost(bool bTurnOn)
 	}
 	else if (ReplicatedOriginals.bSet)
 	{
-		//USafeSpawn::SetGhostFor(LastPawn, false, ReplicatedOriginals);
+		USafeSpawn::SetGhostFor(LastPawn, false, ReplicatedOriginals, false);
 	}
 }
 
 void ASafeSpawnLink::SetGhostEffect(bool bTurnOn)
 {
-	//USafeSpawn::SetGhostEffectFor(LastPawn, bTurnOn);
+	USafeSpawn::SetGhostEffectFor(LastPawn, bTurnOn);
 }

@@ -114,7 +114,7 @@ void ASafeSpawnInventory::GivenTo(AUTCharacter* NewOwner, bool bAutoActivate)
 		// we are trying to	pick something up differently
 		AddCollisionCheck(true);
 
-		//USafeSpawn::SetGhostSoundFor(P, true);
+		USafeSpawn::SetGhostSoundFor(P, true);
 	}
 }
 
@@ -125,10 +125,10 @@ void ASafeSpawnInventory::Removed()
 	AUTCharacter* P(GetUTOwner());
 	if (Role == ROLE_Authority && P != NULL)
 	{
+		USafeSpawn::SetGhostSoundFor(P, false);
+
 		// for listen server support
 		ClientSetup(P, true);
-
-		//USafeSpawn::SetGhostSoundFor(P, false);
 	}
 }
 
@@ -302,7 +302,7 @@ void ASafeSpawnInventory::PlayWarningSound()
 
 void ASafeSpawnInventory::SetCrosshair(AUTCharacter* P, bool bRemoveCross)
 {
-	//USafeSpawn::SetCrosshairFor(bRemoveCross, CrosshairRestore);
+	USafeSpawn::SetCrosshairFor(bRemoveCross, CrosshairRestore);
 }
 
 void ASafeSpawnInventory::BlockWeapons(AUTCharacter* P, bool bBlock)

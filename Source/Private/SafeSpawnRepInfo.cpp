@@ -86,16 +86,15 @@ void ASafeSpawnRepInfo::SetupInteraction(APlayerController* PC, bool bAdd)
 
 void ASafeSpawnRepInfo::OnFireInput()
 {
-	//if (bFireCalled || USafeSpawn::ShouldIgnoreInputForNow(PawnCounterTime, GetWorld()->GetRealTimeSeconds()))
-	//{
-	//	USafeSpawn::PlayFireBlockedWarningFor(PlayerOwner);
-	//	return;
-	//}
+	if (bFireCalled || USafeSpawn::ShouldIgnoreInputForNow(PawnCounterTime, GetWorld()->GetRealTimeSeconds()))
+	{
+		USafeSpawn::PlayFireBlockedWarningFor(PlayerOwner);
+		return;
+	}
 
 	ServerFired();
 	bFireCalled = true;
 }
-
 
 //**********************************************************************************
 // Client funtions
@@ -132,7 +131,6 @@ void ASafeSpawnRepInfo::ServerFired_Implementation()
 		UnProtectCallback.Execute(PlayerOwner, this);
 	}
 }
-
 
 //**********************************************************************************
 // Public functions
@@ -195,7 +193,7 @@ void ASafeSpawnRepInfo::SetPPEffects(APlayerController* PC, bool bAdd)
 	if (PC == NULL)
 		return;
 
-	//USafeSpawn::SetPPEffectsFor(PC, bAdd, bOriginalOverridePostProcessSettings, OriginalPostProcessSettingsOverride, PP_Scene_Changed);
+	USafeSpawn::SetPPEffectsFor(PC, bAdd, bOriginalOverridePostProcessSettings, OriginalPostProcessSettingsOverride, PP_Scene_Changed);
 }
 
 void ASafeSpawnRepInfo::SetGhost(AUTCharacter* P, bool bTurnOn)
@@ -209,7 +207,7 @@ void ASafeSpawnRepInfo::SetGhost(AUTCharacter* P, bool bTurnOn)
 	bOriginals.bOriginalPushesRigidBodies = bOriginalPushesRigidBodies;
 	bOriginals.bOriginalIgnoreForces = bOriginalIgnoreForces;
 
-	//USafeSpawn::SetGhostFor(P, bTurnOn, bOriginals);
+	USafeSpawn::SetGhostFor(P, bTurnOn, bOriginals, false);
 
 	bOriginalCollideActors = bOriginals.bOriginalCollideActors;
 	bOriginalBlockActors = bOriginals.bOriginalBlockActors;
@@ -221,7 +219,7 @@ void ASafeSpawnRepInfo::SetGhostEffect(AUTCharacter* P, bool bTurnOn)
 {
 	if (P != NULL)
 	{
-		//USafeSpawn::SetGhostEffectFor(P, bTurnOn);
+		USafeSpawn::SetGhostEffectFor(P, bTurnOn);
 	}
 }
 
@@ -230,5 +228,5 @@ void ASafeSpawnRepInfo::SetThirdPerson(APlayerController* PC, bool bEnable)
 	if (PC == NULL)
 		return;
 
-	//USafeSpawn::SetThirdPersonFor(PC, bEnable, bOriginalBehindView);
+	USafeSpawn::SetThirdPersonFor(PC, bEnable, bOriginalBehindView);
 }

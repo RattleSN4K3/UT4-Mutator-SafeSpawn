@@ -5,6 +5,7 @@
 #include "UTCharacter.h"
 //#include "UTPlayerController.h"
 
+#include "SafeSpawn.h"
 #include "SafeSpawnLink.generated.h"
 
 UCLASS(Blueprintable)

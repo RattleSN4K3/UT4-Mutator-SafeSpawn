@@ -103,6 +103,7 @@ void ASafeSpawnMutator::ModifyPlayer_Implementation(APawn* Other)
 {
 	Super::ModifyPlayer_Implementation(Other);
 
+	// TODO: add Ghost protection ignore when bots actually ignore Spawn protected players
 	//// adjust spawn times so bots will ignore the bots on spawn
 	////
 	//// as bots are generally ignoring bots with the default spawn protection,
@@ -297,7 +298,7 @@ void ASafeSpawnMutator::ProtectPlayer(AUTCharacter* Other, bool bProtect, ASafeS
 			}
 
 			// check if we should kill someone or die if we spawn in a colliding object
-			//USafeSpawn::CheckSpawnKill(Other);
+			USafeSpawn::CheckSpawnKill(Other);
 		}
 
 		if (ClientRI != NULL)

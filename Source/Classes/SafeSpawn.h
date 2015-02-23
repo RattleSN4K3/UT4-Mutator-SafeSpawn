@@ -74,71 +74,89 @@ DECLARE_DELEGATE_TwoParams(FUnProtectFireDelegate, APlayerController*, ASafeSpaw
 
 DECLARE_DELEGATE_OneParam(FUnProtectPickupDelegate, ACharacter*);
 
-UCLASS()
-class USafeSpawn : public UObject
+UCLASS(CustomConstructor)
+class USafeSpawn : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
 
-	//static bool bDefaultVal = false;
+	USafeSpawn(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+	{}
 
 	//'''''''''''''''''''''''''
 	// Private static functions
 	//'''''''''''''''''''''''''
 
-	static UMaterialInterface GetGhostMaterial();
-	static USoundBase GetGhostAmbientSound();
+private:
+
+	static UMaterialInterface* GetGhostMaterial();
+	static USoundBase* GetGhostAmbientSound();
 
 	//'''''''''''''''''''''''''
 	// Static functions
 	//'''''''''''''''''''''''''
 
-	static void SetPPEffectsFor(APlayerController PC, bool bAdd, bool& bOriginalOverridePostProcessSettings, FPostProcessSettings& OriginalPostProcessSettingsOverride, bool& PP_Scene_Changed);
+public:
+
+	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
+	static void SetPPEffectsFor(APlayerController* PC, bool bAdd, bool& bOriginalOverridePostProcessSettings, FPostProcessSettings& OriginalPostProcessSettingsOverride, bool& PP_Scene_Changed);
 
 	// TODO: Add overload static method 
 	//static void SetGhostFor(AUTCharacter* P, bool bTurnOn);
-	static void SetGhostFor(AUTCharacter* P, bool bTurnOn, const FGhostCollisionInfo& bOriginals = FGhostCollisionInfo(), bool bUseDefault = false);
+	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
+	static void SetGhostFor(AUTCharacter* P, bool bTurnOn, const FGhostCollisionInfo& bOriginals/* = FGhostCollisionInfo()*/, bool bUseDefault/* = false*/);
+
+	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
 	static void SetGhostEffectFor(AUTCharacter* P, bool bTurnOn);
-	static void SetSkinEx(AUTCharacter* P, UMaterialInterface NewMaterial);
+	
+	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
+	static void SetSkinEx(AUTCharacter* P, UMaterialInterface* NewMaterial);
+	
+	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
 	static void SetGhostSoundFor(AUTCharacter* P, bool bTurnOn);
+	
+	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
 	static void SetCrosshairFor(bool bRemoveCross, TArray<FCrosshairRestoreInfo>& CrosshairRestore);
 	
-	static void SetThirdPersonFor(APlayerController* UTPC, bool bEnable, const bool& bOriginalBehindView = false);
+	// TODO: Add overload static method 
+	//static void SetThirdPersonFor(APlayerController* UTPC, bool bEnable);
+	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
+	static void SetThirdPersonFor(APlayerController* UTPC, bool bEnable, /*const*/ bool& bOriginalBehindView/* = false*/);
 
+	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
 	static void CheckSpawnKill(AUTCharacter* Other);
+	
+	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
 	static void PlayFireBlockedWarningFor(APlayerController* PlayerOwner);
 
-	static bool ShouldIgnoreInputForNow(float StoredTime, float CurrentTime)
-	{
-		/*if (GetDefault()->IgnoreInputThreshold < 0)
-		{
-			return true;
-		}
+	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
+	static bool ShouldIgnoreInputForNow(float StoredTime, float CurrentTime);
 
-		return (StoredTime + GetDefault()->IgnoreInputThreshold > CurrentTime);*/
-		return true;
-	}
 
-	inline FLinearColor NormalizeColor(FLinearColor LC)
-	{
+	//'''''''''''''''''''''''''
+	// Helpers
+	//'''''''''''''''''''''''''
 
-		//local vector v;
-		//v.X = LC.R;
-		//v.Y = LC.G;
-		//v.Z = LC.B;
+	//inline FLinearColor NormalizeColor(FLinearColor LC)
+	//{
+	//	//local vector v;
+	//	//v.X = LC.R;
+	//	//v.Y = LC.G;
+	//	//v.Z = LC.B;
 
-		//v = Normal(v);
-		//return MakeLinearColor(v.X, v.Y, v.Z, 1.0);
-	}
+	//	//v = Normal(v);
+	//	//return MakeLinearColor(v.X, v.Y, v.Z, 1.0);
+	//}
 
-	inline FLinearColor BoostColor(FLinearColor LC, float strength)
-	{
-		//local vector v;
-		//v.X = LC.R**4;
-		//v.Y = LC.G**4;
-		//v.Z = LC.B**4;
+	//inline FLinearColor BoostColor(FLinearColor LC, float strength)
+	//{
+	//	//local vector v;
+	//	//v.X = LC.R**4;
+	//	//v.Y = LC.G**4;
+	//	//v.Z = LC.B**4;
 
-		//v = Normal(v);
-		//v *= strength;
-		//return MakeLinearColor(v.X, v.Y, v.Z, 1.0);
-	}
+	//	//v = Normal(v);
+	//	//v *= strength;
+	//	//return MakeLinearColor(v.X, v.Y, v.Z, 1.0);
+	//}
 };
