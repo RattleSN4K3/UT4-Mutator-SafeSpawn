@@ -15,6 +15,12 @@ class ASafeSpawnLink : public AInfo
 protected:
 
 	//'''''''''''''''''''''''''
+	// Workflow variables
+	//'''''''''''''''''''''''''
+	
+	FUnProtectFireDelegate UnProtectCallback;
+	
+	//'''''''''''''''''''''''''
 	// Server variables
 	//'''''''''''''''''''''''''
 
@@ -31,7 +37,13 @@ protected:
 	virtual void OnRep_PawnOwner();
 
 	UPROPERTY(Replicated)
-	float ReplicatedOriginals;
+	FGhostCollisionInfo ReplicatedOriginals;
+
+	//'''''''''''''''''''''''''
+	// Private functions
+	//'''''''''''''''''''''''''
+
+	void UpdateGhost(bool bEnable);
 
 	//'''''''''''''''''''''''''
 	// Public functions
@@ -44,4 +56,12 @@ public:
 
 	/** ONLY CALLED SERVERSIDED */
 	void NotfiyRemove();
+
+	//'''''''''''''''''''''''''
+	// Ghost protection funtions
+	//'''''''''''''''''''''''''
+
+	void SetGhost(bool bTurnOn);
+	void SetGhostEffect(bool bTurnOn);
+
 };

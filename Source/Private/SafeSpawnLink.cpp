@@ -32,7 +32,23 @@ void ASafeSpawnLink::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & Ou
 
 void ASafeSpawnLink::OnRep_PawnOwner()
 {
+	if (OldPawnOwner != PawnOwner) // prevent update twice 
+	{
+		OldPawnOwner = PawnOwner;
+		if (PawnOwner != NULL) LastPawn = PawnOwner;
 
+		UpdateGhost(PawnOwner != NULL);
+	}
+}
+
+//**********************************************************************************
+// Private funtions
+//**********************************************************************************
+
+void ASafeSpawnLink::UpdateGhost(bool bEnable)
+{
+	SetGhost(bEnable);
+	SetGhostEffect(bEnable);
 }
 
 //**********************************************************************************
@@ -42,11 +58,45 @@ void ASafeSpawnLink::OnRep_PawnOwner()
 /** ONLY CALLED SERVERSIDED */
 void ASafeSpawnLink::NotfiyNewPawn(AUTCharacter* Other)
 {
+	PawnOwner = Other;
 
+	// also apply ghost effect for ded servers (due to collision etc.)
+	OnRep_PawnOwner();
 }
 
 /** ONLY CALLED SERVERSIDED */
 void ASafeSpawnLink::NotfiyRemove()
 {
+	PawnOwner = NULL;
 
+	// also apply ghost effect for ded servers (due to collision etc.)
+	OnRep_PawnOwner();
+}
+
+//**********************************************************************************
+// Ghost protection funtions
+//**********************************************************************************
+
+void ASafeSpawnLink::SetGhost(bool bTurnOn)
+{
+	if (bTurnOn)
+	{
+		FGhostCollisionInfo bOriginals = FGhostCollisionInfo();
+		//USafeSpawn::SetGhostFor(LastPawn, true, bOriginals);
+
+		if (Role == ROLE_Authority)
+		{
+			ReplicatedOriginals = bOriginals;
+			ReplicatedOriginals.bSet = true;
+		}
+	}
+	else if (ReplicatedOriginals.bSet)
+	{
+		//USafeSpawn::SetGhostFor(LastPawn, false, ReplicatedOriginals);
+	}
+}
+
+void ASafeSpawnLink::SetGhostEffect(bool bTurnOn)
+{
+	//USafeSpawn::SetGhostEffectFor(LastPawn, bTurnOn);
 }

@@ -217,13 +217,7 @@ void ASafeSpawnMutator::ConditionallyAddPRIFor(APlayerController* PC)
 		ClientRI = GetWorld()->SpawnActor<ASafeSpawnRepInfo>(ASafeSpawnRepInfo::StaticClass(), Params);
 		if (ClientRI != NULL)
 		{
-			FUnProtectFireDelegate Delegate;
-			//Delegate.BindSP(this, &ASafeSpawnMutator::OnUnProtectFire);
-
-			//Delegate.BindUObject(this, &ASafeSpawnMutator::OnUnProtectFire);
-			//ClientRI->InitialSetup(PC, Delegate, InitialFireDelay);
-
-			//ClientRI->InitialSetup(PC, FUnProtectFireDelegate::CreateUObject(this, &ASafeSpawnMutator::OnUnProtectFire), InitialFireDelay);
+			ClientRI->InitialSetup(PC, FUnProtectFireDelegate::CreateUObject(this, &ASafeSpawnMutator::OnUnProtectFire), InitialFireDelay);
 		}
 	}
 }
@@ -303,7 +297,7 @@ void ASafeSpawnMutator::ProtectPlayer(AUTCharacter* Other, bool bProtect, ASafeS
 			}
 
 			// check if we should kill someone or die if we spawn in a colliding object
-			//class'UT4SafeSpawn'.static.CheckSpawnKill(Other);
+			//USafeSpawn::CheckSpawnKill(Other);
 		}
 
 		if (ClientRI != NULL)
@@ -362,7 +356,7 @@ bool ASafeSpawnMutator::GiveInventory(AUTCharacter* Other)
 		Other->AddInventory(inv, false);
 
 		// setup (which sets time and replicates sound cue)		
-		//inv->SetupInventory(Other, InventoryWarningSound, GhostProtectionTime, FUnProtectPickupDelegate::CreateUObject(this, &ASafeSpawnMutator::OnUnProtectPickup));
+		inv->SetupInventory(Other, InventoryWarningSound, GhostProtectionTime, FUnProtectPickupDelegate::CreateUObject(this, &ASafeSpawnMutator::OnUnProtectPickup));
 
 		return true;
 	}
