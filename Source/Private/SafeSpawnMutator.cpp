@@ -5,6 +5,7 @@
 #include "UTPickup.h"
 #include "UTPickupHealth.h"
 #include "UTPickupAmmo.h"
+#include "UTJumpBoots.h"
 
 #include "SafeSpawnMutator.h"
 
@@ -102,6 +103,20 @@ bool ASafeSpawnMutator::CheckRelevance_Implementation(AActor* Other)
 void ASafeSpawnMutator::ModifyPlayer_Implementation(APawn* Other)
 {
 	Super::ModifyPlayer_Implementation(Other);
+
+	// TODO: Wait for engine fix as AUTJumpBoots is not exported properly
+	// FIX: prevent JumpBoots from callign ModifyPlayer again (and protecting the player again).
+	// TODO: remove fix once JumpBoots are not calling SetPlayerDefauts anymore
+	//if (Cast<AUTCharacter>(Other) != nullptr)
+	//{
+	//	AUTCharacter* Char = Cast<AUTCharacter>(Other);
+	//	AUTJumpBoots* boots = Char->FindInventoryType<AUTJumpBoots>(AUTJumpBoots::StaticClass());
+	//	if (boots != nullptr && boots->NumJumps < 1)
+	//	{
+	//		return;
+	//	}
+	//}
+
 
 	// TODO: add Ghost protection ignore when bots actually ignore Spawn protected players
 	//// adjust spawn times so bots will ignore the bots on spawn
