@@ -302,7 +302,7 @@ void ASafeSpawnInventory::PlayWarningSound()
 
 void ASafeSpawnInventory::SetCrosshair(AUTCharacter* P, bool bRemoveCross)
 {
-	USafeSpawn::SetCrosshairFor(bRemoveCross, CrosshairRestore);
+	USafeSpawn::SetCrosshairFor(P, bRemoveCross, CrosshairRestore);
 }
 
 void ASafeSpawnInventory::BlockWeapons(AUTCharacter* P, bool bBlock)

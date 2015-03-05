@@ -43,7 +43,7 @@ void USafeSpawn::SetGhostSoundFor(AUTCharacter* P, bool bTurnOn)
 
 }
 
-void USafeSpawn::SetCrosshairFor(bool bRemoveCross, TArray<FCrosshairRestoreInfo>& CrosshairRestore)
+void USafeSpawn::SetCrosshairFor(AUTCharacter* P, bool bRemoveCross, TArray<FCrosshairRestoreInfo>& CrosshairRestore)
 {
 
 }

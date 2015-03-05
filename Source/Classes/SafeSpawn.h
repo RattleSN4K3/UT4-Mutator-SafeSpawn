@@ -116,7 +116,7 @@ public:
 	static void SetGhostSoundFor(AUTCharacter* P, bool bTurnOn);
 	
 	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
-	static void SetCrosshairFor(bool bRemoveCross, TArray<FCrosshairRestoreInfo>& CrosshairRestore);
+	static void SetCrosshairFor(AUTCharacter* P, bool bRemoveCross, TArray<FCrosshairRestoreInfo>& CrosshairRestore);
 	
 	// TODO: Add overload static method 
 	//static void SetThirdPersonFor(APlayerController* UTPC, bool bEnable);
