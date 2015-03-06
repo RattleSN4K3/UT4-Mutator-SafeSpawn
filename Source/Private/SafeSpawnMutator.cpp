@@ -5,7 +5,7 @@
 #include "UTPickup.h"
 #include "UTPickupHealth.h"
 #include "UTPickupAmmo.h"
-#include "UTJumpBoots.h"
+//#include "UTJumpBoots.h"
 
 #include "SafeSpawnMutator.h"
 
@@ -31,7 +31,7 @@ void ASafeSpawnMutator::BeginPlay()
 
 	// early out
 	AGameMode* GM = GetWorld()->GetAuthGameMode();
-	if (!GM)
+	if (GM == nullptr)
 		return;
 
 	TSubclassOf<class AUTCharacter> DefaultPawnClass(*GM->DefaultPawnClass);
@@ -111,8 +111,9 @@ void ASafeSpawnMutator::ModifyPlayer_Implementation(APawn* Other)
 	//{
 	//	AUTCharacter* Char = Cast<AUTCharacter>(Other);
 	//	AUTJumpBoots* boots = Char->FindInventoryType<AUTJumpBoots>(AUTJumpBoots::StaticClass());
-	//	if (boots != nullptr && boots->NumJumps < 1)
+	//	if (boots && boots->NumJumps < 1)
 	//	{
+	//		UE_LOG(LogTemp, Log, TEXT("ModifyPlayer called by JumpBoots. Abort!"));
 	//		return;
 	//	}
 	//}
@@ -280,7 +281,7 @@ void ASafeSpawnMutator::RemoveLinkedRIFrom(AController* C)
 void ASafeSpawnMutator::ProtectPlayer(AUTCharacter* Other, bool bProtect, ASafeSpawnRepInfo*& ClientRI)
 {
 	APlayerController* PC = NULL;
-	if (GetPC(Other, PC) && ClientRI == NULL && !GetClientRI(PC, ClientRI))
+	if (GetPC(Other, PC) && ClientRI == nullptr && !GetClientRI(PC, ClientRI))
 	{
 		// Unable to find ClientRI for connected client, abort
 		return;

@@ -147,6 +147,7 @@ void ASafeSpawnRepInfo::NotifyRespawned(AUTCharacter* Other)
 	// for listen servers
 	if (GWorld->GetNetMode() != NM_DedicatedServer && bLocallyOwned())
 	{
+		// TODO: FIX: Game crahes on executing this line
 		OnRep_PawnCounter();
 	}
 }
