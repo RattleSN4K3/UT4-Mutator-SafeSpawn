@@ -47,24 +47,23 @@ void ASafeSpawnInventory::OnRep_InvSetup()
 // Inherited funtions
 //**********************************************************************************
 
-// TODO: Wait for engine fix as AUTTimedPowerup is not exported properly
-///** called when TimeRemaining reaches zero */
-//void ASafeSpawnInventory::TimeExpired_Implementation()
-//{
-//	if (Role == ROLE_Authority)
-//	{
-//		//// store callback locally as it will be de-referenced in the Destroyed method
-//		//FUnProtectPickup UnProtectDelegate = UnProtectCallback;
-//
-//		//Super::TimeExpired();
-//
-//		//// notify main module
-//		//if (UnProtectDelegate != NULL && UnProtectDelegate.IsBound())
-//		//{
-//		//	UnProtectDelegate.Execute(GetInstigator<AUTCharacter>());
-//		//}
-//	}
-//}
+/** called when TimeRemaining reaches zero */
+void ASafeSpawnInventory::TimeExpired_Implementation()
+{
+	if (Role == ROLE_Authority)
+	{
+		// store callback locally as it will be de-referenced in the Destroyed method
+		FUnProtectPickupDelegate UnProtectDelegate = UnProtectCallback;
+
+		Super::TimeExpired_Implementation();
+
+		// notify main module
+		if (/*UnProtectDelegate != NULL &&*/ UnProtectDelegate.IsBound())
+		{
+			UnProtectDelegate.Execute(GetInstigator<AUTCharacter>());
+		}
+	}
+}
 
 void ASafeSpawnInventory::Destroyed()
 {
@@ -93,7 +92,7 @@ void ASafeSpawnInventory::Destroyed()
 			UnProtectCallback = NULL;
 
 			// notify server
-			if (UnProtectDelegate.IsBound() /*&& TimeRemaining > 0*/)
+			if (UnProtectDelegate.IsBound() && TimeRemaining > 0)
 			{
 				UnProtectDelegate.Execute(GetInstigator<AUTCharacter>());
 			}
@@ -107,14 +106,13 @@ void ASafeSpawnInventory::GivenTo(AUTCharacter* NewOwner, bool bAutoActivate)
 {
 	Super::GivenTo(NewOwner, bAutoActivate);
 
-	AUTCharacter* P = Cast<AUTCharacter>(NewOwner);
-	if (P != NULL)
+	if (NewOwner != NULL)
 	{
 		// we disabled the collision, we need to check whether
 		// we are trying to	pick something up differently
 		AddCollisionCheck(true);
 
-		USafeSpawn::SetGhostSoundFor(P, true);
+		USafeSpawn::SetGhostSoundFor(NewOwner, true);
 	}
 }
 
@@ -165,7 +163,7 @@ void ASafeSpawnInventory::OwnerEvent_Implementation(FName EventName)
 		
 		if (EventName == NAME_FiredWeapon || bBreak == false) // fall through
 		{
-			//TimeExpired();
+			TimeExpired();
 		}
 	}
 }
@@ -186,7 +184,7 @@ void ASafeSpawnInventory::SetupInventory(AUTCharacter* Other, USoundBase* InWarn
 {
 	FSetupInfo LocalSetup;
 
-	//TimeRemaining = InGhostProtectionTime;
+	TimeRemaining = InGhostProtectionTime;
 	UnProtectCallback = UnProtectDelegate;
 
 	// replicate setup variables to client

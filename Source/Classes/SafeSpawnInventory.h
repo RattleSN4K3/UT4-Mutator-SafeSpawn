@@ -1,8 +1,9 @@
 #pragma once
 
+#include "SafeSpawn.h"
 #include "UTHUDWidget.h"
 #include "UTInventory.h"
-#include "SafeSpawn.h"
+#include "UTTimedPowerup.h"
 #include "SafeSpawnInventory.generated.h"
 
 USTRUCT()
@@ -22,7 +23,7 @@ struct FSetupInfo
 };
 
 UCLASS(Config = SafeSpawn)
-class ASafeSpawnInventory : public AUTInventory // TODO: implement AUTTimedPowerup once engine exports it properly
+class ASafeSpawnInventory : public AUTTimedPowerup
 {
 	GENERATED_UCLASS_BODY()
 
@@ -107,8 +108,7 @@ class ASafeSpawnInventory : public AUTInventory // TODO: implement AUTTimedPower
 	// Inherited funtions
 	//'''''''''''''''''''''''''
 
-	// TODO: Wait for engine fix as AUTTimedPowerup is not exported properly
-	//virtual void TimeExpired_Implementation() override;
+	virtual void TimeExpired_Implementation() override;
 
 	virtual void Destroyed() override;
 	virtual void GivenTo(AUTCharacter* NewOwner, bool bAutoActivate) override;
@@ -152,18 +152,19 @@ public:
 	//UFUNCTION(BlueprintAuthorityOnly)
 	void SetupInventory(AUTCharacter* Other, USoundBase* InWarningSound, float InGhostProtectionTime, FUnProtectPickupDelegate UnProtectDelegate);
 
-
 	//'''''''''''''''''''''''''
 	// Helper
 	//'''''''''''''''''''''''''
 
 	// TODO: Should bLocallyOwned be inline?
 	// For use with listen servers
-	inline bool bLocallyOwned()
+	bool bLocallyOwned()
 	{
-		AActor* Owner = GetOwner();
+		AActor* Owner = GetUTOwner();
 		if (Owner == NULL)
+		{
 			return false;
+		}
 
 		AController* C;
 		if (Cast<APawn>(Owner) != NULL)
@@ -175,5 +176,13 @@ public:
 			return true;
 
 		return false;
+	}
+
+	AUTCharacter* GetUTOwner() const
+	{
+		if (InvSetup.InvOwner != NULL)
+			return InvSetup.InvOwner;
+
+		return Super::GetUTOwner();
 	}
 };

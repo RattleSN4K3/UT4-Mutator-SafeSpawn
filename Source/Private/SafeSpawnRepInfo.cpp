@@ -46,6 +46,17 @@ void ASafeSpawnRepInfo::OnRep_PlayerOwner()
 
 void ASafeSpawnRepInfo::OnRep_PawnCounter()
 {
+#if UE_BUILD_DEBUG
+
+	UE_LOG(LogTemp, Log, TEXT("OnRep_PawnCounter"));
+	if (PlayerOwner == NULL)
+	{
+		UE_LOG(LogTemp, Log, TEXT("OnRep_PawnCounter - No Pawn Owner!!!"));
+	}
+
+#endif
+
+	checkSlow(PlayerOwner != NULL);
 	if (PawnCounter != NULL && PawnCounter != OldPawn &&
 
 		// check if we are watching our own Pawn
@@ -147,7 +158,6 @@ void ASafeSpawnRepInfo::NotifyRespawned(AUTCharacter* Other)
 	// for listen servers
 	if (GWorld->GetNetMode() != NM_DedicatedServer && bLocallyOwned())
 	{
-		// TODO: FIX: Game crahes on executing this line
 		OnRep_PawnCounter();
 	}
 }

@@ -167,13 +167,14 @@ protected:
 
 	// TODO: Should bLocallyOwned be inline?
 	// For use with listen servers
-	inline bool bLocallyOwned()
+	bool bLocallyOwned()
 	{
 		AActor* Owner = GetOwner();
 		if (Owner == NULL)
 			return false;
 
-		if (GWorld->GetNetMode() != NM_DedicatedServer && Owner != NULL && Cast<ULocalPlayer>(Cast<APlayerController>(Owner)->Player) != NULL)
+		APlayerController* PC = Cast<APlayerController>(Owner);
+		if (PC != NULL && GWorld->GetNetMode() != NM_DedicatedServer && Cast<ULocalPlayer>(PC->Player) != NULL)
 			return true;
 
 		return false;

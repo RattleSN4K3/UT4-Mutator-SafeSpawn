@@ -5,6 +5,7 @@
 #include "UTPickup.h"
 #include "UTPickupHealth.h"
 #include "UTPickupAmmo.h"
+//#include "UTTimedPowerup.h"
 //#include "UTJumpBoots.h"
 
 #include "SafeSpawnMutator.h"
@@ -13,6 +14,8 @@ ASafeSpawnMutator::ASafeSpawnMutator(const FObjectInitializer& ObjectInitializer
 	: Super(ObjectInitializer)
 {
 	DisplayName = NSLOCTEXT("Mutator_SafeSpawn", "Display Name", "Safe Spawn");
+
+	NoSound = ConstructObject<USoundBase>(USoundCue::StaticClass());
 
 	DamageHelperClass = ASafeSpawnInventory::StaticClass();
 
@@ -100,24 +103,13 @@ bool ASafeSpawnMutator::CheckRelevance_Implementation(AActor* Other)
 //	}
 //}
 
-void ASafeSpawnMutator::ModifyPlayer_Implementation(APawn* Other)
+void ASafeSpawnMutator::ModifyPlayer_Implementation(APawn* Other, bool bIsNewSpawn)
 {
-	Super::ModifyPlayer_Implementation(Other);
+	Super::ModifyPlayer_Implementation(Other, bIsNewSpawn);
 
-	// TODO: Wait for engine fix as AUTJumpBoots is not exported properly
-	// FIX: prevent JumpBoots from callign ModifyPlayer again (and protecting the player again).
-	// TODO: remove fix once JumpBoots are not calling SetPlayerDefauts anymore
-	//if (Cast<AUTCharacter>(Other) != nullptr)
-	//{
-	//	AUTCharacter* Char = Cast<AUTCharacter>(Other);
-	//	AUTJumpBoots* boots = Char->FindInventoryType<AUTJumpBoots>(AUTJumpBoots::StaticClass());
-	//	if (boots && boots->NumJumps < 1)
-	//	{
-	//		UE_LOG(LogTemp, Log, TEXT("ModifyPlayer called by JumpBoots. Abort!"));
-	//		return;
-	//	}
-	//}
-
+	// prevent JumpBoots from callign ModifyPlayer again (and thus protecting the player again)
+	if (!bIsNewSpawn)
+		return;
 
 	// TODO: add Ghost protection ignore when bots actually ignore Spawn protected players
 	//// adjust spawn times so bots will ignore the bots on spawn
@@ -147,7 +139,7 @@ void ASafeSpawnMutator::ModifyPlayer_Implementation(APawn* Other)
 // Inherited GameRules funtions
 //**********************************************************************************
 
-void ASafeSpawnMutator::ModifyDamage_Implementation(int32& Damage, FVector& Momentum, APawn* Injured, AController* InstigatedBy, const FHitResult& HitInfo, AActor* DamageCauser, TSubclassOf<UDamageType> DamageType)
+bool ASafeSpawnMutator::ModifyDamage_Implementation(UPARAM(ref) int32& Damage, UPARAM(ref) FVector& Momentum, APawn* Injured, AController* InstigatedBy, const FHitResult& HitInfo, AActor* DamageCauser, TSubclassOf<UDamageType> DamageType)
 {
 	Super::ModifyDamage_Implementation(Damage, Momentum, Injured, InstigatedBy, HitInfo, DamageCauser, DamageType);
 
@@ -160,24 +152,27 @@ void ASafeSpawnMutator::ModifyDamage_Implementation(int32& Damage, FVector& Mome
 		Momentum = FVector(0.0f);
 		Damage = 0;
 	}
+
+	// TODO FIX: remove return value.
+	return true;
 }
 
 bool ASafeSpawnMutator::OverridePickupQuery_Implementation(APawn* Other, TSubclassOf<AUTInventory> ItemClass, AActor* Pickup, bool& bAllowPickup)
 {
 	AUTInventory* inv = NULL;
 	AUTCharacter* Char = Cast<AUTCharacter>(Other);
-	if (Char != NULL && HasInventory(Char, inv))
+ 	if (Char != NULL && HasInventory(Char, inv))
 	{
 		// don't disable ghost protection if player attempted to pickup
 		// Health packs if they aren't adding health (if not SuperHealth)
 
 		// TODO: Wait for engine fix as AUTPickupHealth is not exported properly
-		//if (Cast<AUTPickupHealth>(Pickup) != NULL && (!AUTPickupHealth(Pickup)->bSuperHeal || Char->Health != Char->HealthMax))
-		//{
-		//	Super::OverridePickupQuery_Implementation(Other, ItemClass, Pickup, bAllowPickup);
-		//	bAllowPickup = false;
-		//	return true;
-		//}
+		if (Cast<AUTPickupHealth>(Pickup) != NULL && (Cast<AUTPickupHealth>(Pickup)->bSuperHeal == false || Char->Health != Char->HealthMax))
+		{
+			Super::OverridePickupQuery_Implementation(Other, ItemClass, Pickup, bAllowPickup);
+			bAllowPickup = false;
+			return true;
+		}
 
 		// also ammo packs shouldn't remove protection
 		if (Cast<AUTPickupAmmo>(Pickup) == NULL)
@@ -185,10 +180,9 @@ bool ASafeSpawnMutator::OverridePickupQuery_Implementation(APawn* Other, TSubcla
 			// destroy inventory if there's still one
 			if (!inv->IsPendingKillPending())
 			{
-				// TODO: Wait for engine fix as AUTTimedPowerup is not exported properly
-				//if (UTTimedPowerup(inv) != none)
-					//UTTimedPowerup(inv).TimeExpired(); // call TimeExpired to trigger PowerupOver sound
-				//else
+				if (Cast<AUTTimedPowerup>(Pickup) != NULL)
+					Cast<AUTTimedPowerup>(Pickup)->TimeExpired(); // call TimeExpired to trigger PowerupOver sound
+				else
 					inv->Destroy();
 			}
 		}
@@ -281,8 +275,11 @@ void ASafeSpawnMutator::RemoveLinkedRIFrom(AController* C)
 void ASafeSpawnMutator::ProtectPlayer(AUTCharacter* Other, bool bProtect, ASafeSpawnRepInfo*& ClientRI)
 {
 	APlayerController* PC = NULL;
-	if (GetPC(Other, PC) && ClientRI == nullptr && !GetClientRI(PC, ClientRI))
+	if (GetPC(Other, PC) && ClientRI == NULL&& !GetClientRI(PC, ClientRI))
 	{
+#if UE_BUILD_DEBUG
+		PC->ClientMessage(TEXT("No ClientRI"));
+#endif
 		// Unable to find ClientRI for connected client, abort
 		return;
 	}
@@ -333,7 +330,7 @@ void ASafeSpawnMutator::ProtectPlayer(AUTCharacter* Other, bool bProtect, ASafeS
 		// spawn inventory for Sound, Pickup check and helping messages
 		GiveInventory(Other);
 
-		// TODO: Add support for lockers. And also check if "Landed"-Event is existing in UE4
+		// TODO: Add support for lockers.
 		//if (HasInventory(Other, inv) && Cast<ASafeSpawnInventory>(inv) != none &&
 		//	GetWorld()->GetAuthGameMode<AUTGameMode>() != NULL && GetWorld()->GetAuthGameMode<AUTGameMode>()->bStartWithLockerWeaps)
 		//{
@@ -349,6 +346,7 @@ void ASafeSpawnMutator::ProtectPlayer(AUTCharacter* Other, bool bProtect, ASafeS
 		if (ClientRI != NULL)
 		{
 			// notify rep
+			//UE_LOG(LogTemp, Log, TEXT("Call NotifyRespawned for %s"), *ClientRI->PlayerOwner->GetName());
 			ClientRI->NotifyRespawned(Other);
 		}
 	}
@@ -361,13 +359,13 @@ bool ASafeSpawnMutator::GiveInventory(AUTCharacter* Other)
 		return false;
 	}
 
-	ASafeSpawnInventory* inv = GetWorld()->SpawnActor<ASafeSpawnInventory>(DamageHelperClass, FVector(0.0f), FRotator(0, 0, 0));
+	ASafeSpawnInventory* inv = GetWorld()->SpawnActor<ASafeSpawnInventory>(DamageHelperClass);
 	if (inv != NULL)
 	{
 		//inv->PowerupOverSound = InventoryTimeoutSound;
 
 		// Set the time first
-		//inv->TimeRemaining = GhostProtectionTime;
+		inv->TimeRemaining = GhostProtectionTime;
 
 		// Add the inventory (which also updates TimeRemaining for clients)
 		Other->AddInventory(inv, false);
@@ -379,4 +377,83 @@ bool ASafeSpawnMutator::GiveInventory(AUTCharacter* Other)
 	}
 
 	return false;
+}
+
+//'''''''''''''''''''''''''
+// Helper
+//'''''''''''''''''''''''''
+
+bool ASafeSpawnMutator::HasInventory(AUTCharacter* Other)
+{
+	AUTInventory* inv;
+	return HasInventory(Other, inv);
+}
+
+bool ASafeSpawnMutator::HasInventory(AUTCharacter* Other, AUTInventory*& inv)
+{
+	inv = Other->FindInventoryType<AUTInventory>(DamageHelperClass, true);
+	return (inv != NULL);
+}
+
+bool ASafeSpawnMutator::GetPC(ACharacter* P, APlayerController*& PC)
+{
+	if (P == NULL)
+		return false;
+
+	PC = Cast<APlayerController>(P->Controller);
+	// TODO: Add Vehicle support
+	//if (PC == NULL && P->DrivenVehicle != NULL)
+	//{
+	//	PC = UTPlayerController(P->DrivenVehicle->Controller);
+	//}
+
+	return PC != NULL;
+}
+
+AController* ASafeSpawnMutator::GetController(ACharacter* P)
+{
+	if (P == NULL)
+		return NULL;
+
+	AController* C = P->Controller;
+	// TODO: Add Vehicle support
+	//if (C == NULL && P->DrivenVehicle != NULL)
+	//{
+	//	C = P->DrivenVehicle->Controller;
+	//}
+
+	return C;
+}
+
+bool ASafeSpawnMutator::GetClientRI(APlayerController* PC, ASafeSpawnRepInfo*& out_ClientRI)
+{
+	for (auto Child : PC->Children)
+	{
+		ASafeSpawnRepInfo* Rep = Cast<ASafeSpawnRepInfo>(Child);
+		if (Rep != NULL)
+		{
+			out_ClientRI = Rep;
+			break;
+		}
+	}
+
+	return out_ClientRI != NULL;
+}
+
+bool ASafeSpawnMutator::GetLinkedRI(AController* C, ASafeSpawnLink*& out_LinkedRI)
+{
+	if (C != NULL)
+	{
+		for (auto Child : C->Children)
+		{
+			ASafeSpawnLink* Link = Cast<ASafeSpawnLink>(Child);
+			if (Link != NULL)
+			{
+				out_LinkedRI = Link;
+				break;
+			}
+		}
+	}
+
+	return out_LinkedRI != NULL;
 }

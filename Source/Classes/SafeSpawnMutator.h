@@ -44,6 +44,9 @@ class ASafeSpawnMutator : public AUTMutator
 	UPROPERTY()
 	TSubclassOf<class AUTReplicatedEmitter> RestoreTeleportEffect;
 
+	UPROPERTY()
+	USoundBase* NoSound;
+
 	//'''''''''''''''''''''''''
 	// Classes
 	//'''''''''''''''''''''''''
@@ -60,7 +63,7 @@ class ASafeSpawnMutator : public AUTMutator
 	void PostPlayerInit_Implementation(AController* C) override;
 	void NotifyLogout_Implementation(AController* C) override;
 
-	void ModifyPlayer_Implementation(APawn* Other) override;
+	void ModifyPlayer_Implementation(APawn* Other, bool bIsNewSpawn) override;
 	bool CheckRelevance_Implementation(AActor* Other) override;
 
 	// TODO: Add Vehicle support
@@ -71,7 +74,7 @@ class ASafeSpawnMutator : public AUTMutator
 	// Inherited GameRules functions
 	//'''''''''''''''''''''''''
 
-	void ModifyDamage_Implementation(int32& Damage, FVector& Momentum, APawn* Injured, AController* InstigatedBy, const FHitResult& HitInfo, AActor* DamageCauser, TSubclassOf<UDamageType> DamageType) override;
+	bool ModifyDamage_Implementation(UPARAM(ref) int32& Damage, UPARAM(ref) FVector& Momentum, APawn* Injured, AController* InstigatedBy, const FHitResult& HitInfo, AActor* DamageCauser, TSubclassOf<UDamageType> DamageType) override;
 	bool OverridePickupQuery_Implementation(APawn* Other, TSubclassOf<AUTInventory> ItemClass, AActor* Pickup, bool& bAllowPickup) override;
 
 
@@ -93,9 +96,9 @@ class ASafeSpawnMutator : public AUTMutator
 	void ConditionallyAddLinkedRIFor(AController* C);
 	void RemoveLinkedRIFrom(AController* C);
 
-	inline void ProtectPlayer(AUTCharacter* Other, bool bProtect)
+	void ProtectPlayer(AUTCharacter* Other, bool bProtect)
 	{
-		ASafeSpawnRepInfo* ClientRI;
+		ASafeSpawnRepInfo* ClientRI = NULL;
 		ProtectPlayer(Other, bProtect, ClientRI);
 	}
 
@@ -107,78 +110,12 @@ class ASafeSpawnMutator : public AUTMutator
 	// Helper
 	//'''''''''''''''''''''''''
 
-	inline bool HasInventory(AUTCharacter* Other)
-	{
-		AUTInventory* inv;
-		return HasInventory(Other, inv);
-	}
+	// TODO: implement helpers in header?!
 
-	inline bool HasInventory(AUTCharacter* Other, AUTInventory*& inv)
-	{
-		inv = Other->FindInventoryType<AUTInventory>(DamageHelperClass, true);
-		return (inv != NULL);
-	}
-
-	inline bool GetPC(ACharacter* P, APlayerController*& PC) const
-	{
-		if (P == NULL)
-			return false;
-
-		// TODO: Add Vehicle support
-		//PC = Cast<AUTPlayerController>(P->Controller);
-		//if (PC == NULL && P->DrivenVehicle != NULL)
-		//{
-		//	PC = UTPlayerController(P->DrivenVehicle->Controller);
-		//}
-
-		return PC != NULL;
-	}
-
-	inline AController* GetController(ACharacter* P) const
-	{
-		if (P == NULL)
-			return NULL;
-
-		AController* C = P->Controller;
-		// TODO: Add Vehicle support
-		//if (C == NULL && P->DrivenVehicle != NULL)
-		//{
-		//	C = P->DrivenVehicle->Controller;
-		//}
-
-		return C;
-	}
-
-	inline bool GetClientRI(APlayerController* PC, ASafeSpawnRepInfo*& out_ClientRI) const
-	{
-		for (auto Child : PC->Children)
-		{
-			ASafeSpawnRepInfo* Rep = Cast<ASafeSpawnRepInfo>(Child);
-			if (Rep != NULL)
-			{
-				out_ClientRI = Rep;
-				break;
-			}
-		}
-
-		return out_ClientRI != NULL;
-	}
-
-	inline bool GetLinkedRI(AController* C, ASafeSpawnLink*& out_LinkedRI) const
-	{
-		if (C != NULL)
-		{
-			for (auto Child : C->Children)
-			{
-				ASafeSpawnLink* Link = Cast<ASafeSpawnLink>(Child);
-				if (Link != NULL)
-				{
-					out_LinkedRI = Link;
-					break;
-				}
-			}
-		}
-
-		return out_LinkedRI != NULL;
-	}
+	bool HasInventory(AUTCharacter* Other);
+	bool HasInventory(AUTCharacter* Other, AUTInventory*& inv);
+	bool GetPC(ACharacter* P, APlayerController*& PC);
+	AController* GetController(ACharacter* P);
+	bool GetClientRI(APlayerController* PC, ASafeSpawnRepInfo*& out_ClientRI);
+	bool GetLinkedRI(AController* C, ASafeSpawnLink*& out_LinkedRI);
 };

@@ -2,7 +2,7 @@
 
 #include "Core.h"
 #include "Engine.h"
-
+#include "UnrealTournament.h"
 #include "UTCharacter.h"
 
 //#include "MaterialInterface.h"
@@ -27,7 +27,7 @@ struct FCrosshairRestoreInfo
 	//AUTWeapon* Weap;
 
 	//UPROPERTY()
-	//UTexture2D* CrosshairImage;
+	//UTexture2D* CrosshairTexture;
 };
 
 USTRUCT()
@@ -40,7 +40,7 @@ struct FWeaponRestoreInfo
 
 	/** Array of firing states defining available firemodes */
 	UPROPERTY()
-	TArray<class UUTWeaponStateFiring*> FiringState;
+		TArray<class UUTWeaponStateFiring*> FiringState;
 
 	/////** Defines the type of fire (see Enum above) for each mode */
 	////var				Array<EWeaponFireType>		WeaponFireTypes;
@@ -74,7 +74,11 @@ DECLARE_DELEGATE_TwoParams(FUnProtectFireDelegate, APlayerController*, ASafeSpaw
 
 DECLARE_DELEGATE_OneParam(FUnProtectPickupDelegate, ACharacter*);
 
-UCLASS(CustomConstructor)
+//**********************************************************************************
+// Class
+//**********************************************************************************
+
+UCLASS(CustomConstructor, Config = SafeSpawn)
 class USafeSpawn : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
@@ -82,6 +86,54 @@ class USafeSpawn : public UBlueprintFunctionLibrary
 	USafeSpawn(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 	{}
+
+	//'''''''''''''''''''''''''
+	// Config
+	//'''''''''''''''''''''''''
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Config)
+	bool AllowGhostFrag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Config)
+	bool SwitchToThirdPerson;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Config)
+	bool ApplyPPEffects;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Config)
+	bool HideCrosshairTemporarely;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Config)
+	float IgnoreInputThreshold;
+
+
+	//'''''''''''''''''''''''''
+	// Workflow variables
+	//'''''''''''''''''''''''''
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UMaterialInterface* GhostMaterial;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FString GhostMaterialString;
+
+	/** ambient sound on the pawn when Ghost protection is active */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	USoundBase* GhostAmbientSound;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FString GhostAmbientSoundString;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	USoundBase* FireBlockedWarningSound;
+
+	/* post processing applied while holding this powerup */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FVector PP_Scene_MidTones;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FVector PP_Scene_Shadows;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FVector PP_Scene_HighLights;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float PP_Scene_Desaturation;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float PP_Scene_InterpolationDuration;
+
 
 	//'''''''''''''''''''''''''
 	// Private static functions
@@ -108,16 +160,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
 	static void SetGhostEffectFor(AUTCharacter* P, bool bTurnOn);
-	
+
 	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
 	static void SetSkinEx(AUTCharacter* P, UMaterialInterface* NewMaterial);
-	
+
 	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
 	static void SetGhostSoundFor(AUTCharacter* P, bool bTurnOn);
-	
+
 	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
 	static void SetCrosshairFor(AUTCharacter* P, bool bRemoveCross, TArray<FCrosshairRestoreInfo>& CrosshairRestore);
-	
+
 	// TODO: Add overload static method 
 	//static void SetThirdPersonFor(APlayerController* UTPC, bool bEnable);
 	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
@@ -125,7 +177,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
 	static void CheckSpawnKill(AUTCharacter* Other);
-	
+
 	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
 	static void PlayFireBlockedWarningFor(APlayerController* PlayerOwner);
 
