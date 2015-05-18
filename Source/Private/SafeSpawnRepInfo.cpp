@@ -187,6 +187,7 @@ void ASafeSpawnRepInfo::UpdateGhostFor(AUTCharacter* P, bool bEnable)
 {
 	SetThirdPerson(PlayerOwner, bEnable);
 	SetPPEffects(PlayerOwner, bEnable);
+	SetCrosshair(PlayerOwner, bEnable);
 
 	if (bEnable)
 	{
@@ -240,4 +241,9 @@ void ASafeSpawnRepInfo::SetThirdPerson(APlayerController* PC, bool bEnable)
 		return;
 
 	USafeSpawn::SetThirdPersonFor(PC, bEnable, bOriginalBehindView);
+}
+
+void ASafeSpawnRepInfo::SetCrosshair(APlayerController* PC, bool bRemoveCross)
+{
+	USafeSpawn::SetCrosshairFor(PC, bRemoveCross, bOriginalCrosshairHidden);
 }

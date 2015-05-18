@@ -19,18 +19,6 @@
 //**********************************************************************************
 
 USTRUCT()
-struct FCrosshairRestoreInfo
-{
-	GENERATED_USTRUCT_BODY()
-
-	//UPROPERTY()
-	//AUTWeapon* Weap;
-
-	//UPROPERTY()
-	//UTexture2D* CrosshairTexture;
-};
-
-USTRUCT()
 struct FWeaponRestoreInfo
 {
 	GENERATED_USTRUCT_BODY()
@@ -168,7 +156,7 @@ public:
 	static void SetGhostSoundFor(AUTCharacter* P, bool bTurnOn);
 
 	UFUNCTION(BlueprintCallable, Category = SafeSpawn)
-	static void SetCrosshairFor(AUTCharacter* P, bool bRemoveCross, TArray<FCrosshairRestoreInfo>& CrosshairRestore);
+	static void SetCrosshairFor(APlayerController* PC, bool bRemoveCross, /*const*/ bool& bOriginalCrosshairHidden/* = false*/);
 
 	// TODO: Add overload static method 
 	//static void SetThirdPersonFor(APlayerController* UTPC, bool bEnable);

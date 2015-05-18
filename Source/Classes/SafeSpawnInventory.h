@@ -62,8 +62,6 @@ class ASafeSpawnInventory : public AUTTimedPowerup
 	bool bPlayWarningOnce;
 
 	UPROPERTY()
-	TArray<FCrosshairRestoreInfo> CrosshairRestore;
-	UPROPERTY()
 	TArray<FWeaponRestoreInfo> WeaponRestore;
 
 	UPROPERTY()
@@ -131,9 +129,6 @@ class ASafeSpawnInventory : public AUTTimedPowerup
 
 	void ConditionalPlayWarning();
 	void PlayWarningSound();
-
-	UFUNCTION()
-	void SetCrosshair(AUTCharacter* P, bool bRemoveCross);
 
 	UFUNCTION()
 	void BlockWeapons(AUTCharacter* P, bool bBlock);

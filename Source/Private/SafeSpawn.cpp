@@ -1,4 +1,6 @@
 #include "SafeSpawn.h"
+//#include "UTPlayerController.h"
+#include "UTHUDWidget_WeaponCrosshair.h"
 
 //**********************************************************************************
 // Private static functions
@@ -43,12 +45,24 @@ void USafeSpawn::SetGhostSoundFor(AUTCharacter* P, bool bTurnOn)
 
 }
 
-void USafeSpawn::SetCrosshairFor(AUTCharacter* P, bool bRemoveCross, TArray<FCrosshairRestoreInfo>& CrosshairRestore)
+void USafeSpawn::SetCrosshairFor(APlayerController* PC, bool bRemoveCross, /*const*/ bool& bOriginalCrosshairHidden/* = false*/)
 {
+	// if disabled, abort
+	if (GetDefault<USafeSpawn>()->HideCrosshairTemporarely || PC == NULL || PC->MyHUD == NULL)
+		return;
 
+	AUTHUD* Hud = Cast<AUTHUD>(PC->MyHUD);
+	if (Hud == NULL)
+		return;
+
+	UUTHUDWidget_WeaponCrosshair* Crosshair = Cast<UUTHUDWidget_WeaponCrosshair>(Hud->FindHudWidgetByClass(UUTHUDWidget_WeaponCrosshair::StaticClass()));
+	if (Crosshair == NULL)
+		return;
+
+	Crosshair->SetHidden(bRemoveCross);
 }
 
-void USafeSpawn::SetThirdPersonFor(APlayerController* UTPC, bool bEnable, /*const*/ bool& bOriginalBehindView /*= false*/)
+void USafeSpawn::SetThirdPersonFor(APlayerController* PC, bool bEnable, /*const*/ bool& bOriginalBehindView /*= false*/)
 {
 
 }

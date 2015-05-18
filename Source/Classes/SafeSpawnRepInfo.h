@@ -40,6 +40,8 @@ protected:
 
 	UPROPERTY()
 	bool bOriginalBehindView;
+	UPROPERTY()
+	bool bOriginalCrosshairHidden;
 
 	UPROPERTY()
 	bool bOriginalCollideActors;
@@ -160,6 +162,7 @@ protected:
 	void SetGhost(AUTCharacter* P, bool bTurnOn);
 	void SetGhostEffect(AUTCharacter* P, bool bTurnOn);
 	void SetThirdPerson(APlayerController* PC, bool bEnable);
+	void SetCrosshair(APlayerController* PC, bool bRemoveCross);
 
 	//'''''''''''''''''''''''''
 	// Helper

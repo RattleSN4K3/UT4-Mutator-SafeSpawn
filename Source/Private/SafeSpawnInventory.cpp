@@ -244,7 +244,6 @@ void ASafeSpawnInventory::ClientSetup(AUTCharacter* P, bool bRemove)
 		bAlreadySetup = true;
 		if (bLocallyOwned())
 		{
-			SetCrosshair(P, !bRemove);
 			//BlockWeapons(P, !bRemove);
 
 			if (!bRemove)
@@ -296,11 +295,6 @@ void ASafeSpawnInventory::PlayWarningSound()
 		// TODO: check if played correctly
 		UUTGameplayStatics::UTPlaySound(GetWorld(), InvSetup.WarningSound, this, SRT_None);
 	}
-}
-
-void ASafeSpawnInventory::SetCrosshair(AUTCharacter* P, bool bRemoveCross)
-{
-	USafeSpawn::SetCrosshairFor(P, bRemoveCross, CrosshairRestore);
 }
 
 void ASafeSpawnInventory::BlockWeapons(AUTCharacter* P, bool bBlock)
