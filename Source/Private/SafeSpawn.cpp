@@ -64,7 +64,35 @@ void USafeSpawn::SetCrosshairFor(APlayerController* PC, bool bRemoveCross, /*con
 
 void USafeSpawn::SetThirdPersonFor(APlayerController* PC, bool bEnable, /*const*/ bool& bOriginalBehindView /*= false*/)
 {
+	// if disabled or unable to switch view, abort
+	if (GetDefault<USafeSpawn>()->SwitchToThirdPerson || PC == NULL || !PC->IsLocalPlayerController())
+		return;
 
+	AUTPlayerController* UTPC = Cast<AUTPlayerController>(PC);
+	if (UTPC == NULL)
+		return;
+
+	if (bEnable)
+	{
+		bOriginalBehindView = UTPC->IsBehindView();
+		if (!bOriginalBehindView)
+		{
+			UTPC->BehindView(true);
+		}
+	}
+	else
+	{
+		// TODO: Add Vehicle support
+		if (UTPC->GetUTCharacter() != NULL && /*Cast<AUTVehicle>(UTPC->GetUTCharacter()) == NULL && */UTPC->GetUTCharacter()->IsFeigningDeath())
+		{
+			UTPC->BehindView(true);
+		}
+		else
+		{
+			// TODO: check default behindview
+			UTPC->BehindView(/*UTPC->GetClass()->GetDefaultObject<AUTPlayerController>()->bBehindView || */bOriginalBehindView);
+		}
+	}
 }
 
 void USafeSpawn::CheckSpawnKill(AUTCharacter* Other)
